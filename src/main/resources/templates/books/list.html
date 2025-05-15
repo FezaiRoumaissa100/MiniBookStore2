@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/header :: header">
+    <title>Books</title>
+</head>
+
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show notification-toast" role="alert"
+        style="position: fixed; top: 1.5rem; right: 1.5rem; min-width: 250px; z-index: 1055;">
+        <span th:text="${success}">Item added to cart successfully</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="container mt-4">
+        <h1 class="mb-4" th:text="#{books.title}">Available Books</h1>
+
+        <!-- Search Bar -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <input type="text" id="searchInput" class="form-control me-2" placeholder="Search books...">
+                    <button type="button" class="btn btn-primary" onclick="searchBooks()">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="booksGrid">
+            <div th:each="book : ${books}" class="col book-item">
+                <div class="card h-100 book-card">
+                    <img th:src="${book.imageUrl}" class="card-img-top book-image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                        <p class="card-text" th:text="${book.description}">Book description</p>
+                        <p class="card-text">
+                            <small class="text-muted" th:text="#{books.author} + ': ' + ${book.author}">Author</small>
+                        </p>
+                        <p class="card-text">
+                            <strong th:text="#{books.price} + ': ' + ${book.price} + ' €'">Price</strong>
+                        </p>
+                        <p class="card-text">
+                            <span th:if="${book.stock > 0}" class="text-success"
+                                th:text="#{books.stock} + ': ' + ${book.stock}">In Stock</span>
+                            <span th:unless="${book.stock > 0}" class="text-danger">Out of Stock</span>
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <form th:if="${book.stock > 0}" th:action="@{/cart/add/{id}(id=${book.id})}" method="post"
+                            class="d-inline">
+                            <button type="submit" class="btn btn-primary" th:text="#{books.addToCart}">Add to
+                                Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="noResults" class="text-center mt-5" style="display: none;">
+            <h3 class="text-muted">No books found</h3>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var alert = document.querySelector('.alert-dismissible');
+            if (alert) {
+                setTimeout(function () {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 1500);
+            }
+
+            // Add event listener for search input
+            document.getElementById('searchInput').addEventListener('input', searchBooks);
+        });
+
+        function searchBooks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const bookItems = document.getElementsByClassName('book-item');
+            const noResults = document.getElementById('noResults');
+            let hasResults = false;
+
+            for (let item of bookItems) {
+                const title = item.querySelector('.card-title').textContent.toLowerCase();
+                const author = item.querySelector('.text-muted').textContent.toLowerCase();
+                const description = item.querySelector('.card-text').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || author.includes(searchTerm) || description.includes(searchTerm)) {
+                    item.style.display = '';
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+
+            noResults.style.display = hasResults ? 'none' : 'block';
+        }
+    </script>
+</body>
+
+</html>

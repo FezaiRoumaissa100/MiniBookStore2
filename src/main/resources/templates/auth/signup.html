@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/header :: header">
+    <title>Sign Up</title>
+</head>
+
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card form-container">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4" th:text="#{auth.signup.title}">Sign Up</h2>
+
+                        <!-- Error Message -->
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+                        <!-- Success Message -->
+                        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+                        <!-- Signup Form -->
+                        <form th:action="@{/auth/signup}" method="post" th:object="${userRegistrationDto}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label"
+                                    th:text="#{auth.signup.username}">Username</label>
+                                <input type="text" class="form-control" id="username" th:field="*{username}" required
+                                    autofocus>
+                                <div class="text-danger" th:if="${#fields.hasErrors('username')}"
+                                    th:errors="*{username}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label" th:text="#{auth.signup.email}">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label"
+                                    th:text="#{auth.signup.password}">Password</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                    required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('password')}"
+                                    th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label"
+                                    th:text="#{auth.signup.confirmPassword}">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" th:text="#{auth.signup.submit}">
+                                    Create Account
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <p>
+                                <span th:text="#{auth.login.account}">Already have an account? </span>
+                                <a th:href="@{/auth/login}" th:text="#{nav.login}">Login</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- Add the JavaScript file -->
+    <script th:src="@{/js/signup-validation.js}"></script>
+</body>
+
+</html>

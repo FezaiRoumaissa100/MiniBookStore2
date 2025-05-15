@@ -1,0 +1,69 @@
+/* General Styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Book Cards */
+.book-card {
+    height: 100%;
+    transition: transform 0.2s;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.book-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Cart Styles */
+.cart-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert Styles */
+.alert {
+    margin-bottom: 1rem;
+}
+
+/* Notification Toast */
+.notification-toast {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    pointer-events: auto;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .book-card {
+        margin-bottom: 1rem;
+    }
+
+    .form-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}

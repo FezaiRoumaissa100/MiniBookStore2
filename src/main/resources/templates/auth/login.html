@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/header :: header">
+    <title>Login</title>
+</head>
+
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card form-container">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4" th:text="#{auth.login.title}">Login</h2>
+
+                        <!-- Error Message -->
+                        <div th:if="${param.error}" class="alert alert-danger" th:text="#{auth.login.error}">
+                            Invalid username or password
+                        </div>
+
+                        <!-- Success Message -->
+                        <div th:if="${param.logout}" class="alert alert-success">
+                            You have been logged out successfully.
+                        </div>
+
+                        <!-- Registration Success Message -->
+                        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+                        <!-- Login Form -->
+                        <form th:action="@{/auth/login}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label" th:text="#{auth.login.username}">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label"
+                                    th:text="#{auth.login.password}">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" th:text="#{auth.login.submit}">
+                                    Sign In
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <p>
+                                <span th:text="#{auth.signup.noaccount}">Don't have an account? </span>
+                                <a th:href="@{/auth/signup}" th:text="#{nav.signup}">Sign Up</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+
+</html>

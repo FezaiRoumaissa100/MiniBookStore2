@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/header :: header">
+    <title>Checkout</title>
+</head>
+
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Order Summary</h1>
+
+        <!-- Empty Cart Message -->
+        <div th:if="${#lists.isEmpty(cartItems)}" class="text-center mt-5">
+            <h3 class="text-muted">Your cart is empty</h3>
+            <a th:href="@{/books}" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+
+        <!-- Order Summary Table -->
+        <div th:unless="${#lists.isEmpty(cartItems)}" class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="mb-3">Items in your order</h4>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Book</th>
+                                        <th>Author</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${cartItems}">
+                                        <td th:text="${item.book.title}">Book Title</td>
+                                        <td th:text="${item.book.author}">Author</td>
+                                        <td th:text="${item.quantity}">1</td>
+                                        <td th:text="${#numbers.formatDecimal(item.book.price, 1, 2)} + ' €'">0.00 €
+                                        </td>
+                                        <td
+                                            th:text="${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)} + ' €'">
+                                            0.00 €</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                        <td><strong th:text="${#numbers.formatDecimal(total, 1, 2)} + ' €'">0.00
+                                                €</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <form th:action="@{/orders/place}" method="post">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Confirm Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+
+</html>
