@@ -42,7 +42,11 @@ public class Book {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     public String getImageUrl() {
-        return "/images/Book.jpg";
+        if (image != null && !image.isEmpty()) {
+            return "/images/" + image;
+        } else {
+            return "/images/Book.jpg";
+        }
     }
 
     public Long getId() {

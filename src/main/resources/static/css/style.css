@@ -3,11 +3,25 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: #04204f;
+
 }
 
 .footer {
     margin-top: auto;
+    background-color: #04204f;
 }
+.navbar {
+    background-color: #06316F ;
+}
+.nav-link{
+    color: #fff !important;
+}
+
+.text-muted {
+    color: #fff !important;
+}
+
 
 /* Book Cards */
 .book-card {

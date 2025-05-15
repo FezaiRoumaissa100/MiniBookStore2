@@ -3,6 +3,7 @@
 
 <head th:replace="fragments/header :: header">
     <title>Books</title>
+
 </head>
 
 <body>
@@ -15,10 +16,10 @@
     </div>
 
     <div class="container mt-4">
-        <h1 class="mb-4" th:text="#{books.title}">Available Books</h1>
+        <h1 class="mb-4 text-light text-center" th:text="#{books.title}">Available Books</h1>
 
         <!-- Search Bar -->
-        <div class="row mb-4">
+        <div class="row mb-4 d-flex justify-content-center">
             <div class="col-md-6">
                 <div class="d-flex">
                     <input type="text" id="searchInput" class="form-control me-2" placeholder="Search books...">
@@ -30,30 +31,29 @@
         <!-- Books Grid -->
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="booksGrid">
             <div th:each="book : ${books}" class="col book-item">
-                <div class="card h-100 book-card">
-                    <img th:src="${book.imageUrl}" class="card-img-top book-image">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${book.title}">Book Title</h5>
-                        <p class="card-text" th:text="${book.description}">Book description</p>
-                        <p class="card-text">
-                            <small class="text-muted" th:text="#{books.author} + ': ' + ${book.author}">Author</small>
-                        </p>
-                        <p class="card-text">
-                            <strong th:text="#{books.price} + ': ' + ${book.price} + ' €'">Price</strong>
-                        </p>
-                        <p class="card-text">
-                            <span th:if="${book.stock > 0}" class="text-success"
-                                th:text="#{books.stock} + ': ' + ${book.stock}">In Stock</span>
-                            <span th:unless="${book.stock > 0}" class="text-danger">Out of Stock</span>
-                        </p>
+                <div class="card mb-3" style="max-width: 540px;">
+                  <div class="row g-0">
+                    <div class="col-md-4">
+                      <img th:src="${book.imageUrl}" class="img-fluid rounded-start book-image" th:alt="${book.title}"  onerror="this.onerror=null;this.src='/images/Book.jpg';">
                     </div>
-                    <div class="card-footer bg-transparent">
-                        <form th:if="${book.stock > 0}" th:action="@{/cart/add/{id}(id=${book.id})}" method="post"
-                            class="d-inline">
-                            <button type="submit" class="btn btn-primary" th:text="#{books.addToCart}">Add to
-                                Cart</button>
+                    <div class="col-md-8">
+                      <div class="card-body p-4">
+                        <h5 class="card-title fw-bold mb-2 text-primary" th:text="${book.title}">Book Title</h5>
+                        <p class="card-text text-secondary mb-2" th:text="${book.description}">Book description</p>
+                        <p class="mb-1">
+                          <span class="badge bg-info text-dark me-2"><i class="bi bi-person"></i> <span th:text="#{books.author}"></span>: <span th:text="${book.author}"></span></span>
+                          <span class="badge bg-success"><i class="bi bi-currency-euro"></i> <span th:text="#{books.price}"></span>: <span th:text="${book.price}"></span> €</span>
+                        </p>
+                        <p class="mb-2">
+                          <span th:if="${book.stock > 0}" class="badge bg-success"><i class="bi bi-check-circle"></i> <span th:text="#{books.stock}"></span>: <span th:text="${book.stock}"></span></span>
+                          <span th:unless="${book.stock > 0}" class="badge bg-danger"><i class="bi bi-x-circle"></i> Out of Stock</span>
+                        </p>
+                        <form th:if="${book.stock > 0}" th:action="@{/cart/add/{id}(id=${book.id})}" method="post" class="d-inline">
+                          <button type="submit" class="btn btn-primary px-4 shadow-sm" th:text="#{books.addToCart}">Add to Cart</button>
                         </form>
+                      </div>
                     </div>
+                  </div>
                 </div>
             </div>
         </div>
