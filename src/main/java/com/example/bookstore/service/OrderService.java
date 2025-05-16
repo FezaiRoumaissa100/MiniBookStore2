@@ -45,6 +45,7 @@ public class OrderService {
             Order order = new Order();
             order.setUser(user);
             order.setOrderDate(LocalDateTime.now());
+            order.setStatus(OrderStatus.PENDING);
 
 
             double totalAmount = 0.0;
