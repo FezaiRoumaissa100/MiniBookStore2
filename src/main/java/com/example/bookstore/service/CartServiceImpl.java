@@ -3,6 +3,7 @@ package com.example.bookstore.service;
 import com.example.bookstore.models.Book;
 import com.example.bookstore.models.CartItem;
 import com.example.bookstore.repositories.BookRepository;
+import com.example.bookstore.controllers.ShoppingCartController;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,17 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class CartServiceImpl implements CartService {
     
-    // Exception interne
-    public static class CartProcessingException extends RuntimeException {
-        public CartProcessingException(String message) {
-            super(message);
-        }
-
-        public CartProcessingException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     private final Map<String, Map<Long, CartItem>> userCarts = new ConcurrentHashMap<>();
     private final BookRepository bookRepository;
 
@@ -32,10 +22,10 @@ public class CartServiceImpl implements CartService {
     public void addToCart(Long bookId, int quantity, String username) {
         try {
             Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new CartProcessingException("Book not found: " + bookId));
+                    .orElseThrow(() -> new ShoppingCartController.CartProcessingException("Book not found: " + bookId));
 
             if (book.getStock() < quantity) {
-                throw new CartProcessingException("Insufficient stock for book: " + book.getTitle());
+                throw new ShoppingCartController.CartProcessingException("Insufficient stock for book: " + book.getTitle());
             }
 
             Map<Long, CartItem> userCart = userCarts.computeIfAbsent(username, k -> new HashMap<>());
@@ -50,7 +40,7 @@ public class CartServiceImpl implements CartService {
                 userCart.put(bookId, newItem);
             }
         } catch (Exception e) {
-            throw new CartProcessingException("Failed to add item to cart", e);
+            throw new ShoppingCartController.CartProcessingException("Failed to add item to cart", e);
         }
     }
 
@@ -67,20 +57,20 @@ public class CartServiceImpl implements CartService {
         try {
             Map<Long, CartItem> userCart = userCarts.get(username);
             if (userCart == null || !userCart.containsKey(bookId)) {
-                throw new CartProcessingException("Item not found in cart");
+                throw new ShoppingCartController.CartProcessingException("Item not found in cart");
             }
 
             Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new CartProcessingException("Book not found: " + bookId));
+                    .orElseThrow(() -> new ShoppingCartController.CartProcessingException("Book not found: " + bookId));
 
             if (book.getStock() < quantity) {
-                throw new CartProcessingException("Insufficient stock for book: " + book.getTitle());
+                throw new ShoppingCartController.CartProcessingException("Insufficient stock for book: " + book.getTitle());
             }
 
             CartItem item = userCart.get(bookId);
             item.setQuantity(quantity);
         } catch (Exception e) {
-            throw new CartProcessingException("Failed to update cart item quantity", e);
+            throw new ShoppingCartController.CartProcessingException("Failed to update cart item quantity", e);
         }
     }
 

@@ -43,7 +43,7 @@
                                                 <span th:case="*" class="badge bg-secondary"><i class="bi bi-question-circle"></i> <span th:text="${order.status}"></span></span>
                                             </span>
                                         </td>
-                                        <td class="fw-semibold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' €'">0.00 €</td>
+                                        <td class="fw-semibold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' DT'">0.00 DT</td>
                                         <td>
                                             <a th:href="@{/orders/confirmation/{id}(id=${order.id})}"
                                                 class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> View</a>

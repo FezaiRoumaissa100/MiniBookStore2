@@ -8,7 +8,7 @@ import com.example.bookstore.models.User;
 import com.example.bookstore.repositories.BookRepository;
 import com.example.bookstore.repositories.OrderRepository;
 import com.example.bookstore.repositories.UserRepository;
-import com.example.bookstore.exception.OrderProcessingException;
+import com.example.bookstore.controllers.OrdersController;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +36,10 @@ public class OrderService {
     public Order placeOrder(String username, List<OrderItem> items) {
         try {
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new OrderProcessingException("User not found"));
+                    .orElseThrow(() -> new OrdersController.OrderProcessingException("User not found"));
 
             if (items == null || items.isEmpty()) {
-                throw new OrderProcessingException("Order must contain at least one item");
+                throw new OrdersController.OrderProcessingException("Order must contain at least one item");
             }
 
             Order order = new Order();
@@ -51,10 +51,10 @@ public class OrderService {
             double totalAmount = 0.0;
             for (OrderItem item : items) {
                 Book book = bookRepository.findById(item.getBook().getId())
-                        .orElseThrow(() -> new OrderProcessingException("Book not found: " + item.getBook().getId()));
+                        .orElseThrow(() -> new OrdersController.OrderProcessingException("Book not found: " + item.getBook().getId()));
 
                 if (book.getStock() < item.getQuantity()) {
-                    throw new OrderProcessingException("Insufficient stock for book: " + book.getTitle());
+                    throw new OrdersController.OrderProcessingException("Insufficient stock for book: " + book.getTitle());
                 }
 
                 item.setOrder(order);
@@ -72,7 +72,7 @@ public class OrderService {
             cartService.clearCart(username);
             return savedOrder;
         } catch (Exception e) {
-            throw new OrderProcessingException("Error processing order: " + e.getMessage(), e);
+            throw new OrdersController.OrderProcessingException("Error processing order: " + e.getMessage(), e);
         }
     }
 

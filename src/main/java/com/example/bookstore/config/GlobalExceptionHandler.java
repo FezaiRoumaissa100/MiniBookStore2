@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.example.bookstore.exception.BookNotFoundException;
-import com.example.bookstore.exception.OrderNotFoundException;
-import com.example.bookstore.exception.OrderProcessingException;
-import com.example.bookstore.exception.CartProcessingException;
+import com.example.bookstore.controllers.BooksController;
+import com.example.bookstore.controllers.OrdersController;
+import com.example.bookstore.controllers.ShoppingCartController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,36 +21,36 @@ public class GlobalExceptionHandler {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
     }
 
-    @ExceptionHandler(BookNotFoundException.class)
+    @ExceptionHandler(BooksController.BookNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleBookNotFound(BookNotFoundException ex, Model model) {
+    public String handleBookNotFound(BooksController.BookNotFoundException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorType", "Book Not Found");
         model.addAttribute("timestamp", formatTimestamp());
         return "error";
     }
 
-    @ExceptionHandler(OrderNotFoundException.class)
+    @ExceptionHandler(OrdersController.OrderNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleOrderNotFound(OrderNotFoundException ex, Model model) {
+    public String handleOrderNotFound(OrdersController.OrderNotFoundException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorType", "Order Not Found");
         model.addAttribute("timestamp", formatTimestamp());
         return "error";
     }
 
-    @ExceptionHandler(OrderProcessingException.class)
+    @ExceptionHandler(OrdersController.OrderProcessingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleOrderProcessing(OrderProcessingException ex, Model model) {
+    public String handleOrderProcessing(OrdersController.OrderProcessingException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorType", "Order Processing Error");
         model.addAttribute("timestamp", formatTimestamp());
         return "error";
     }
 
-    @ExceptionHandler(CartProcessingException.class)
+    @ExceptionHandler(ShoppingCartController.CartProcessingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleCartProcessing(CartProcessingException ex, Model model) {
+    public String handleCartProcessing(ShoppingCartController.CartProcessingException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorType", "Cart Processing Error");
         model.addAttribute("timestamp", formatTimestamp());

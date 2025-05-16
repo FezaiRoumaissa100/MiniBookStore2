@@ -17,9 +17,9 @@
 
     <div class="container mt-4">
         <!-- Search Bar -->
-        <div class="row mb-4">
-            <div class="col-md-4 ms-auto">
-                <div class="search-container">
+        <div class="row mb-4 justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="search-container ">
                     <input type="text" id="searchInput" class="form-control search-input" placeholder="Search books...">
                     <i class="bi bi-search search-icon"></i>
                 </div>
@@ -40,13 +40,13 @@
                         <p class="card-text text-secondary mb-2" th:text="${book.description}">Book description</p>
                         <p class="mb-1">
                           <span class="badge bg-info text-dark me-2"><i class="bi bi-person"></i> <span th:text="#{books.author}"></span>: <span th:text="${book.author}"></span></span>
-                          <span class="badge bg-success"><i class="bi bi-currency-euro"></i> <span th:text="#{books.price}"></span>: <span th:text="${book.price}"></span> €</span>
+                          <span class="badge bg-success"><i class="bi bi-currency-dollar"></i> <span th:text="#{books.price}"></span>: <span th:text="${book.price}"></span> DT</span>
                         </p>
                         <p class="mb-2">
                           <span th:if="${book.stock > 0}" class="badge bg-success"><i class="bi bi-check-circle"></i> <span th:text="#{books.stock}"></span>: <span th:text="${book.stock}"></span></span>
                           <span th:unless="${book.stock > 0}" class="badge bg-danger"><i class="bi bi-x-circle"></i> Out of Stock</span>
                         </p>
-                        <form th:if="${book.stock > 0}" th:action="@{/cart/add/{id}(id=${book.id})}" method="post" class="d-inline">
+                        <form th:if="${book.stock > 0}" th:action="@{/shopping-cart/add/{id}(id=${book.id})}" method="post" class="d-inline">
                           <button type="submit" class="btn btn-primary px-4 shadow-sm" th:text="#{books.addToCart}">Add to Cart</button>
                         </form>
                       </div>

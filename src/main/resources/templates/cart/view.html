@@ -8,58 +8,75 @@
 <body>
     <div th:replace="fragments/navbar :: navbar"></div>
 
-    <div class="container mt-4">
-        <h1 class="text-center mb-4" th:text="#{cart.your.cart}">Votre Panier</h1>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4 text-primary d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-cart3"></i>
+            <span th:text="#{cart.your.cart}">Votre Panier</span>
+        </h1>
 
         <!-- Empty Cart Message -->
         <div th:if="${#lists.isEmpty(cartItems)}" class="text-center mt-5">
-            <h3 class="text-muted" th:text="#{cart.empty}">Votre panier est vide</h3>
-            <a th:href="@{/books}" class="btn btn-primary mt-3" th:text="#{cart.continue.shopping}">Continuer mes achats</a>
+            <i class="bi bi-bag-x text-muted" style="font-size: 4rem;"></i>
+            <h3 class="text-muted mt-3" th:text="#{cart.empty}">Votre panier est vide</h3>
+            <a th:href="@{/books}" class="btn btn-primary mt-3" th:text="#{cart.continue.shopping}"><i class="bi bi-arrow-right-circle"></i> Continuer mes achats</a>
         </div>
 
         <!-- Cart Content -->
         <div th:unless="${#lists.isEmpty(cartItems)}">
             <!-- Total at the top -->
-            <div class="card mb-4 w-50 mx-auto">
+            <div class="card shadow-lg border-0 mb-4 w-50 mx-auto">
                 <div class="card-body text-center">
-                    <h5 class="card-title" th:text="#{cart.total}">Total</h5>
-                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(total, 1, 3)} + ' DT'">0.000 DT</h3>
+                    <h5 class="card-title text-secondary mb-2" th:text="#{cart.total}">Total</h5>
+                    <h2 class="mb-0 text-success fw-bold">
+                        <i class="bi bi-cash-coin"></i>
+                        <span th:text="${#numbers.formatDecimal(total, 1, 3)} + ' DT'">0.000 DT</span>
+                    </h2>
                     <form th:action="@{/orders/checkout}" method="get" class="mt-3">
-                        <button type="submit" class="btn btn-primary" th:text="#{cart.order}">Commander</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm" th:text="#{cart.order}"><i class="bi bi-bag-check"></i> Commander</button>
                     </form>
                 </div>
             </div>
 
             <!-- Cart Items -->
             <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div th:each="item : ${cartItems}" class="card mb-3">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img th:src="${item.book.imageUrl}" class="img-fluid rounded" alt="Book cover">
-                                </div>
-                                <div class="col-md-4">
-                                    <h5 class="mb-1" th:text="${item.book.title}">Book Title</h5>
-                                    <p class="text-muted mb-0" th:text="${item.book.author}">Author</p>
-                                </div>
-                                <div class="col-md-2">
-                                    <form th:action="@{/cart/update/{id}(id=${item.book.id})}" method="post" class="d-flex align-items-center">
-                                        <input type="number" name="quantity" th:value="${item.quantity}"
-                                            class="form-control form-control-sm" min="1" max="99" style="width: 70px;"
-                                            onchange="this.form.submit()">
-                                    </form>
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <p class="mb-0" th:text="${#numbers.formatDecimal(item.book.price, 1, 3)} + ' DT'">0.000 DT</p>
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <form th:action="@{/cart/remove/{id}(id=${item.book.id})}" method="post">
-                                        <button type="submit" class="btn btn-danger btn-sm" th:text="#{cart.remove}">Supprimer</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-md-10">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover bg-white rounded shadow-sm overflow-hidden">
+                            <thead class="table-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Book</th>
+                                    <th>Author</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${cartItems}">
+                                    <td style="width: 80px;">
+                                        <img th:src="${item.book.imageUrl}" class="img-fluid rounded" alt="Book cover" style="max-width: 60px;">
+                                    </td>
+                                    <td class="fw-semibold text-primary" th:text="${item.book.title}">Book Title</td>
+                                    <td class="text-muted" th:text="${item.book.author}">Author</td>
+                                    <td style="width: 120px;">
+                                        <form th:action="@{/shopping-cart/update/{id}(id=${item.book.id})}" method="post" class="d-flex align-items-center justify-content-center">
+                                            <input type="number" name="quantity" th:value="${item.quantity}"
+                                                class="form-control form-control-sm text-center" min="1" max="99" style="width: 70px;"
+                                                onchange="this.form.submit()">
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success fs-6"><i class="bi bi-currency-dollar"></i> <span th:text="${#numbers.formatDecimal(item.book.price, 1, 3)} + ' DT'">0.000 DT</span></span>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/shopping-cart/remove/{id}(id=${item.book.id})}" method="post">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> <span th:text="#{cart.remove}">Supprimer</span></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

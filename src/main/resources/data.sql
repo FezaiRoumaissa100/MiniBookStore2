@@ -1,9 +1,8 @@
 -- Users
 INSERT INTO users (email, password, username, role) VALUES
-('admin@bookstore.com', '$2a$12$I5N8IYlOCZZRUoESU8JFuuRX6AGhGX7Jhe2wotULuwBYufZeHMNxO', 'admin', 'ADMIN'),
+    ('admin@bookstore.com', '$2a$12$I5N8IYlOCZZRUoESU8JFuuRX6AGhGX7Jhe2wotULuwBYufZeHMNxO', 'admin', 'ADMIN'),
 ('user@bookstore.com', '$2a$12$nGkrTB0WOi0pPNSbbY4IWeceMxakaWNzjIXVcpJGFJM8qgF2X0lvu', 'user', 'USER'),
 ('testuser@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'testuser', 'USER');
-
 -- Books
 INSERT INTO books (title, author, price, stock, description, image) VALUES
 ('Harry Potter', 'J.K Rowling ', 150, 10, 'The famous Harry Potter', 'Harry_Potter.jpg'),

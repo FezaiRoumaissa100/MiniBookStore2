@@ -2,7 +2,7 @@ package com.example.bookstore.service;
 
 import com.example.bookstore.models.Book;
 import com.example.bookstore.repositories.BookRepository;
-import com.example.bookstore.exception.BookNotFoundException;
+import com.example.bookstore.controllers.BooksController;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book getBookById(Long id) {
         return bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+                .orElseThrow(() -> new BooksController.BookNotFoundException("Book not found with id: " + id));
     }
 }
 

@@ -19,13 +19,12 @@
                         <div class="order-details mb-4">
                             <h3 th:text="#{order.title}">Order Confirmation</h3>
                             <p>
-                                <strong th:text="#{order.number} + ${': '}">Order Number: </strong>
+                                <strong th:text="#{order.number}">Order Number:</strong>
                                 <span th:text="${order.id}">12345</span>
                             </p>
                             <p>
-                                <strong th:text="#{order.date} + ${': '}">Order Date: </strong>
-                                <span
-                                    th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                                <strong th:text="#{order.date}">Order Date:</strong>
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
                             </p>
                         </div>
 
@@ -48,19 +47,19 @@
                                             <td th:text="${item.book.title}">Book Title</td>
                                             <td th:text="${item.book.author}">Author</td>
                                             <td th:text="${item.quantity}">1</td>
-                                            <td th:text="${item.book.price + ' €'}">0.00 €</td>
-                                            <td th:text="${item.book.price * item.quantity + ' €'}">0.00 €</td>
+                                            <td th:text="${#numbers.formatDecimal(item.book.price, 1, 2)} + ' DT'">0.00 DT</td>
+                                            <td th:text="${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)} + ' DT'">0.00 DT</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="4" class="text-end">
-                                                <strong th:text="#{order.total} + ${': '}">Total Amount: </strong>
+                                                <strong th:text="#{order.total}">Total Amount:</strong>
                                             </td>
                                             <td>
                                                 <strong
-                                                    th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' €'">0.00
-                                                    €</strong>
+                                                    th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' DT'">0.00
+                                                    DT</strong>
                                             </td>
                                         </tr>
                                     </tfoot>
