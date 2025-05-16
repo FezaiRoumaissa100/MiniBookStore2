@@ -1,6 +1,5 @@
 package com.example.bookstore.service;
 
-import com.example.bookstore.exception.OrderProcessingException;
 import com.example.bookstore.models.Book;
 import com.example.bookstore.models.Order;
 import com.example.bookstore.models.OrderItem;
@@ -9,6 +8,7 @@ import com.example.bookstore.models.User;
 import com.example.bookstore.repositories.BookRepository;
 import com.example.bookstore.repositories.OrderRepository;
 import com.example.bookstore.repositories.UserRepository;
+import com.example.bookstore.exception.OrderProcessingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,18 +18,17 @@ import java.util.Optional;
 
 @Service
 public class OrderService {
+    
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
-    private final EmailService emailService;
     private final CartService cartService;
 
     public OrderService(OrderRepository orderRepository, UserRepository userRepository,
-            BookRepository bookRepository, EmailService emailService, CartService cartService) {
+            BookRepository bookRepository, CartService cartService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
-        this.emailService = emailService;
         this.cartService = cartService;
     }
 
@@ -46,7 +45,7 @@ public class OrderService {
             Order order = new Order();
             order.setUser(user);
             order.setOrderDate(LocalDateTime.now());
-            order.setStatus(OrderStatus.PENDING);
+
 
             double totalAmount = 0.0;
             for (OrderItem item : items) {
@@ -61,7 +60,6 @@ public class OrderService {
                 item.setPriceAtPurchase(book.getPrice());
                 totalAmount += book.getPrice() * item.getQuantity();
 
-                // Update book stock
                 book.setStock(book.getStock() - item.getQuantity());
                 bookRepository.save(book);
             }
@@ -70,11 +68,10 @@ public class OrderService {
             order.setItems(items);
 
             Order savedOrder = orderRepository.save(order);
-            // emailService.sendOrderConfirmation(savedOrder);
             cartService.clearCart(username);
             return savedOrder;
         } catch (Exception e) {
-            throw new OrderProcessingException("Failed to process order: " + e.getMessage(), e);
+            throw new OrderProcessingException("Error processing order: " + e.getMessage(), e);
         }
     }
 

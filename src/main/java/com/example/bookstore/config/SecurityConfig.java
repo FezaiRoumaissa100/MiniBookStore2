@@ -30,29 +30,26 @@ public class SecurityConfig {
 
                 http
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/books")
-                                                .permitAll()
-                                                .requestMatchers("/auth/login", "/auth/signup").anonymous()
+                                                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                                                .requestMatchers("/", "/books", "/books/**", "/auth/login", "/auth/signup").permitAll()
                                                 .requestMatchers("/h2-console/**").denyAll()
                                                 .requestMatchers("/changeLanguage").permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                                .anyRequest().authenticated())
+                                                .requestMatchers("/cart/**", "/order/**").authenticated()
+                                                .anyRequest().permitAll())
                                 .formLogin(form -> form
                                                 .loginPage("/auth/login")
                                                 .defaultSuccessUrl("/", true)
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
-                                                .logoutSuccessUrl("/auth/login?logout")
+                                                .logoutSuccessUrl("/")
                                                 .deleteCookies("JSESSIONID")
                                                 .invalidateHttpSession(true)
                                                 .clearAuthentication(true)
                                                 .permitAll())
-
-                        .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-
-                        .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers("/h2-console/**"));
+                                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
 
                 return http.build();
         }

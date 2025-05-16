@@ -1,6 +1,6 @@
 package com.example.bookstore.controllers;
 
-import com.example.bookstore.exception.CartProcessingException;
+import com.example.bookstore.service.CartServiceImpl.CartProcessingException;
 import com.example.bookstore.models.CartItem;
 import com.example.bookstore.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,10 @@ public class CartController {
 
     @GetMapping
     public String viewCart(Model model, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+        
         try {
             String username = authentication.getName();
             List<CartItem> cartItems = cartService.getCartItems(username);
@@ -40,6 +44,10 @@ public class CartController {
                           @RequestParam(defaultValue = "1") int quantity,
                           Authentication authentication,
                           RedirectAttributes redirectAttributes) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+
         try {
             String username = authentication.getName();
             cartService.addToCart(bookId, quantity, username);
@@ -54,6 +62,10 @@ public class CartController {
     public String removeFromCart(@PathVariable Long bookId,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+
         try {
             String username = authentication.getName();
             cartService.removeFromCart(bookId, username);
@@ -69,6 +81,10 @@ public class CartController {
                                @RequestParam int quantity,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+
         try {
             String username = authentication.getName();
             cartService.updateCartItemQuantity(bookId, quantity, username);

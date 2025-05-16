@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>Error</title>
+</head>
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0" th:text="${errorType ?: 'Error'}">Error</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title" th:text="${errorMessage ?: 'An unexpected error occurred'}">
+                            An unexpected error occurred
+                        </h5>
+                        <p class="card-text text-muted" th:if="${timestamp}" th:text="${'Time: ' + timestamp}"></p>
+                        <div class="mt-4">
+                            <a href="/" class="btn btn-primary me-2">Return to Home</a>
+                            <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html> 

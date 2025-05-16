@@ -1,135 +1,107 @@
 package com.example.bookstore.service;
 
-import com.example.bookstore.exception.CartProcessingException;
 import com.example.bookstore.models.Book;
 import com.example.bookstore.models.CartItem;
-import com.example.bookstore.models.User;
 import com.example.bookstore.repositories.BookRepository;
-import com.example.bookstore.repositories.CartItemRepository;
-import com.example.bookstore.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class CartServiceImpl implements CartService {
+    
+    // Exception interne
+    public static class CartProcessingException extends RuntimeException {
+        public CartProcessingException(String message) {
+            super(message);
+        }
 
-    private final CartItemRepository cartItemRepository;
+        public CartProcessingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    private final Map<String, Map<Long, CartItem>> userCarts = new ConcurrentHashMap<>();
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
 
-    public CartServiceImpl(CartItemRepository cartItemRepository,
-            BookRepository bookRepository,
-            UserRepository userRepository) {
-        this.cartItemRepository = cartItemRepository;
+    public CartServiceImpl(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
-    @Transactional
     public void addToCart(Long bookId, int quantity, String username) {
         try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CartProcessingException("User not found"));
             Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new CartProcessingException("Book not found"));
-
-            if (quantity <= 0) {
-                throw new CartProcessingException("Quantity must be greater than 0");
-            }
+                    .orElseThrow(() -> new CartProcessingException("Book not found: " + bookId));
 
             if (book.getStock() < quantity) {
-                throw new CartProcessingException("Insufficient stock available");
+                throw new CartProcessingException("Insufficient stock for book: " + book.getTitle());
             }
 
-            CartItem cartItem = cartItemRepository.findByUserAndBook(user, book)
-                    .orElseGet(() -> {
-                        CartItem newItem = new CartItem();
-                        newItem.setUser(user);
-                        newItem.setBook(book);
-                        newItem.setQuantity(0);
-                        return newItem;
-                    });
-
-            cartItem.setQuantity(cartItem.getQuantity() + quantity);
-            cartItemRepository.save(cartItem);
+            Map<Long, CartItem> userCart = userCarts.computeIfAbsent(username, k -> new HashMap<>());
+            
+            CartItem existingItem = userCart.get(bookId);
+            if (existingItem != null) {
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            } else {
+                CartItem newItem = new CartItem();
+                newItem.setBook(book);
+                newItem.setQuantity(quantity);
+                userCart.put(bookId, newItem);
+            }
         } catch (Exception e) {
-            throw new CartProcessingException("Failed to add item to cart: " + e.getMessage(), e);
+            throw new CartProcessingException("Failed to add item to cart", e);
         }
     }
 
     @Override
-    @Transactional
     public void removeFromCart(Long bookId, String username) {
-        try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CartProcessingException("User not found"));
-            Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new CartProcessingException("Book not found"));
-
-            cartItemRepository.deleteByUserAndBook(user, book);
-        } catch (Exception e) {
-            throw new CartProcessingException("Failed to remove item from cart: " + e.getMessage(), e);
+        Map<Long, CartItem> userCart = userCarts.get(username);
+        if (userCart != null) {
+            userCart.remove(bookId);
         }
     }
 
     @Override
-    @Transactional
     public void updateCartItemQuantity(Long bookId, int quantity, String username) {
         try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CartProcessingException("User not found"));
-            Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new CartProcessingException("Book not found"));
-
-            if (quantity <= 0) {
-                throw new CartProcessingException("Quantity must be greater than 0");
+            Map<Long, CartItem> userCart = userCarts.get(username);
+            if (userCart == null || !userCart.containsKey(bookId)) {
+                throw new CartProcessingException("Item not found in cart");
             }
+
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new CartProcessingException("Book not found: " + bookId));
 
             if (book.getStock() < quantity) {
-                throw new CartProcessingException("Insufficient stock available");
+                throw new CartProcessingException("Insufficient stock for book: " + book.getTitle());
             }
 
-            CartItem cartItem = cartItemRepository.findByUserAndBook(user, book)
-                    .orElseThrow(() -> new CartProcessingException("Cart item not found"));
-
-            cartItem.setQuantity(quantity);
-            cartItemRepository.save(cartItem);
+            CartItem item = userCart.get(bookId);
+            item.setQuantity(quantity);
         } catch (Exception e) {
-            throw new CartProcessingException("Failed to update cart item quantity: " + e.getMessage(), e);
+            throw new CartProcessingException("Failed to update cart item quantity", e);
         }
     }
 
     @Override
     public List<CartItem> getCartItems(String username) {
-        try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CartProcessingException("User not found"));
-            return cartItemRepository.findByUser(user);
-        } catch (Exception e) {
-            throw new CartProcessingException("Failed to get cart items: " + e.getMessage(), e);
+        Map<Long, CartItem> userCart = userCarts.get(username);
+        if (userCart == null) {
+            return new ArrayList<>();
         }
+        return new ArrayList<>(userCart.values());
     }
 
     @Override
     public double getCartTotal(String username) {
-        try {
-            List<CartItem> cartItems = getCartItems(username);
-            return cartItems.stream()
-                    .mapToDouble(item -> item.getBook().getPrice() * item.getQuantity())
-                    .sum();
-        } catch (Exception e) {
-            throw new CartProcessingException("Failed to calculate cart total: " + e.getMessage(), e);
-        }
+        return getCartItems(username).stream()
+                .mapToDouble(item -> item.getBook().getPrice() * item.getQuantity())
+                .sum();
     }
 
     @Override
-    @Transactional
     public void clearCart(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CartProcessingException("User not found"));
-        cartItemRepository.deleteAll(cartItemRepository.findByUser(user));
+        userCarts.remove(username);
     }
 }

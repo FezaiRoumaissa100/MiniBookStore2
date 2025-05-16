@@ -16,14 +16,12 @@
     </div>
 
     <div class="container mt-4">
-        <h1 class="mb-4 text-light text-center" th:text="#{books.title}">Available Books</h1>
-
         <!-- Search Bar -->
-        <div class="row mb-4 d-flex justify-content-center">
-            <div class="col-md-6">
-                <div class="d-flex">
-                    <input type="text" id="searchInput" class="form-control me-2" placeholder="Search books...">
-                    <button type="button" class="btn btn-primary" onclick="searchBooks()">Search</button>
+        <div class="row mb-4">
+            <div class="col-md-4 ms-auto">
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="Search books...">
+                    <i class="bi bi-search search-icon"></i>
                 </div>
             </div>
         </div>
@@ -88,7 +86,7 @@
 
             for (let item of bookItems) {
                 const title = item.querySelector('.card-title').textContent.toLowerCase();
-                const author = item.querySelector('.text-muted').textContent.toLowerCase();
+                const author = item.querySelector('.badge.bg-info').textContent.toLowerCase();
                 const description = item.querySelector('.card-text').textContent.toLowerCase();
 
                 if (title.includes(searchTerm) || author.includes(searchTerm) || description.includes(searchTerm)) {
