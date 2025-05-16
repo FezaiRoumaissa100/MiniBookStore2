@@ -8,36 +8,53 @@
 <body>
     <div th:replace="fragments/navbar :: navbar"></div>
 
-    <div class="container mt-4">
-        <h1 class="mb-4">Order History</h1>
-        <div th:if="${#lists.isEmpty(orders)}" class="text-center mt-5">
-            <h3 class="text-muted">You have no orders yet.</h3>
-            <a th:href="@{/books}" class="btn btn-primary mt-3">Continue Shopping</a>
-        </div>
-        <div th:unless="${#lists.isEmpty(orders)}" class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Total</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="order : ${orders}">
-                        <td th:text="${order.id}">1</td>
-                        <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
-                        <td th:text="${order.status}">PENDING</td>
-                        <td th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' €'">0.00 €</td>
-                        <td>
-                            <a th:href="@{/orders/confirmation/{id}(id=${order.id})}"
-                                class="btn btn-outline-primary btn-sm">View</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <h1 class="mb-4 text-primary d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history"></i> Order History
+                        </h1>
+                        <div th:if="${#lists.isEmpty(orders)}" class="text-center mt-5">
+                            <i class="bi bi-archive text-muted" style="font-size: 4rem;"></i>
+                            <h3 class="text-muted mt-3">You have no orders yet.</h3>
+                            <a th:href="@{/books}" class="btn btn-primary mt-3"><i class="bi bi-arrow-right-circle"></i> Continue Shopping</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(orders)}" class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${orders}">
+                                        <td class="fw-bold" th:text="${order.id}">1</td>
+                                        <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                                        <td>
+                                            <span th:switch="${order.status}">
+                                                <span th:case="'DELIVERED'" class="badge bg-success"><i class="bi bi-check-circle"></i> Delivered</span>
+                                                <span th:case="'PENDING'" class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                                <span th:case="*" class="badge bg-secondary"><i class="bi bi-question-circle"></i> <span th:text="${order.status}"></span></span>
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)} + ' €'">0.00 €</td>
+                                        <td>
+                                            <a th:href="@{/orders/confirmation/{id}(id=${order.id})}"
+                                                class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> View</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
