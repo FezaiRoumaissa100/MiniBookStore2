@@ -15,7 +15,6 @@ public class UserRegistrationDto {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
 
     private String password;
 
